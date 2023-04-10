@@ -50,7 +50,7 @@ class Controller
 
     public function getNumber($kisaan_id)
     {
-        $get_number_query = "SELECT SUM(`number`) AS `number` FROM `number`";
+        $get_number_query = "SELECT SUM(`number`) AS `number` FROM `number` WHERE `kisaan_id` = '$kisaan_id'";
         $get_number = $this->con->query($get_number_query);
         $total = mysqli_fetch_array($get_number, MYSQLI_ASSOC);
         
@@ -78,5 +78,25 @@ class Controller
         } else {
             return FALSE;
         }
+    }
+
+    public function getNumberDetails($kisaan_id)
+    {
+        $html = '';
+        $getNumbers_query = "SELECT * FROM `number` WHERE `kisaan_id` = '$kisaan_id'";
+        $getNumbers = $this->con->query($getNumbers_query);
+
+        $total_numbers = $this->getNumber($kisaan_id);
+        
+        $i = 0;
+        $html .= '<table class="table table-bordered shadow"><thead><tr class="text-center"><th>S.No.</th><th>Date</th><th>Time</th><th>Number</th></tr></thead><tbody>';
+        if($getNumbers->num_rows > 0){
+            foreach($getNumbers as $number){
+                $html .= '<tr><td>'. ++$i .'</td><td>' . $number['date'] . '</td><td>' . $number['time'] . '</td><td><span style="font-size:16px;font-weight:600;">' . $number['number'] . '</span></td></tr>';
+            }
+        }
+        $html .= '</tbody></table><span><b>Total:</b> ' . $total_numbers . '</span>';
+
+        return $html;
     }
 }

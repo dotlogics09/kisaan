@@ -29,6 +29,7 @@ if (isset($_POST['add_number'])) {
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 </head>
 
 <body>
@@ -68,9 +69,14 @@ if (isset($_POST['add_number'])) {
                 <thead>
                     <tr>
                         <td colspan="1">
-                            <select class="form-control" id="kisaan_village">
+                            <select class="form-control" id="village" onchange="getkisaanByvillage()">
                                 <option>All</option>
-                                <option>Test</option>
+                                <?php 
+                                $all_kisaan = $object->getAllKisaan();
+                                foreach ($all_kisaan as $kisaan) {
+                                ?>
+                                <option value="<?php echo $kisaan['village']; ?>"><?php echo $kisaan['village']; ?></option>
+                                <?php } ?>
                             </select>
                         </td>
                     </tr>
@@ -84,7 +90,6 @@ if (isset($_POST['add_number'])) {
                 </thead>
                 <tbody>
                     <?php
-                    $all_kisaan = $object->getAllKisaan();
                     $i = 0;
                     foreach ($all_kisaan as $kisaan) {
                         $get_number = $object->getNumber($kisaan['id']);
@@ -97,7 +102,7 @@ if (isset($_POST['add_number'])) {
                             <td>
                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="addNewNumber(<?php echo $kisaan['id']; ?>);">Add</button>
                             </td>
-                            <td><button type="button" class="btn btn-dark" data-toggle="modal" data-target="#myView">View</button></td>
+                            <td><button type="button" class="btn btn-dark" data-toggle="modal" data-target="#myView" onclick="view_numbers(<?php echo $kisaan['id']; ?>);">View</button></td>
                         </tr>
                     <?php } ?>
                 </tbody>
@@ -150,7 +155,18 @@ if (isset($_POST['add_number'])) {
 
                 <!-- Modal body -->
                 <div class="modal-body">
-
+                    <div id="numbers_list">
+                        <table class="table table-bordered shadow">
+                            <thead>
+                                <tr class="text-center">
+                                    <th>S.No.</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Number</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- Modal footer -->
@@ -165,6 +181,23 @@ if (isset($_POST['add_number'])) {
     <script>
         function addNewNumber(id) {
             document.getElementById("kisaan_id").value = id;
+        }
+
+        function getkisaanByvillage()
+        {
+            a = document.getElementById("village").value;
+            console.log(a);
+        }
+
+        function view_numbers(id) {
+            $.ajax({
+                url: "get_numbers.php?kisaan_id=" + id,
+                type: "GET",
+                success: function(response) {
+                    console.log(response);
+                    document.getElementById("numbers_list").innerHTML = response;
+                }
+            });
         }
     </script>
 </body>
