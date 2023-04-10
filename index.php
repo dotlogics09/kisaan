@@ -70,43 +70,52 @@ if (isset($_POST['add_number'])) {
                     <tr>
                         <td colspan="1">
                             <select class="form-control" id="village" onchange="getkisaanByvillage()">
-                                <option>All</option>
-                                <?php 
-                                $all_kisaan = $object->getAllKisaan();
+                                <option value="all">All</option>
+                                <?php
+                                $all_kisaan = $object->getAllKisaan('filter');
                                 foreach ($all_kisaan as $kisaan) {
                                 ?>
-                                <option value="<?php echo $kisaan['village']; ?>"><?php echo $kisaan['village']; ?></option>
+                                    <option value="<?php echo $kisaan['village']; ?>"><?php echo $kisaan['village']; ?></option>
                                 <?php } ?>
                             </select>
                         </td>
                     </tr>
-                    <tr class="text-center">
-                        <th>S.No.</th>
-                        <th>Customer Name</th>
-                        <th>Number</th>
-                        <th>Village</th>
-                        <th colspan="2">Action</th>
-                    </tr>
                 </thead>
-                <tbody>
-                    <?php
-                    $i = 0;
-                    foreach ($all_kisaan as $kisaan) {
-                        $get_number = $object->getNumber($kisaan['id']);
-                    ?>
-                        <tr class="text-center">
-                            <td><?php echo ++$i ?></td>
-                            <td><?php echo $kisaan['name'] ?></td>
-                            <td><?php echo $get_number ?></td>
-                            <td><?php echo $kisaan['village'] ?></td>
-                            <td>
-                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="addNewNumber(<?php echo $kisaan['id']; ?>);">Add</button>
-                            </td>
-                            <td><button type="button" class="btn btn-dark" data-toggle="modal" data-target="#myView" onclick="view_numbers(<?php echo $kisaan['id']; ?>);">View</button></td>
-                        </tr>
-                    <?php } ?>
-                </tbody>
             </table>
+
+            <div id="main_kisaan_list">
+                <table class="table table-bordered shadow">
+                    <thead>
+                        <tr class="text-center">
+                            <th>S.No.</th>
+                            <th>Customer Name</th>
+                            <th>Number</th>
+                            <th>Village</th>
+                            <th colspan="2">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $all_kisaan = $object->getAllKisaan('list');
+                        $i = 0;
+                        foreach ($all_kisaan as $kisaan) {
+                            $get_number = $object->getNumber($kisaan['id']);
+                        ?>
+                            <tr class="text-center">
+                                <td><?php echo ++$i ?></td>
+                                <td><?php echo $kisaan['name'] ?></td>
+                                <td><?php echo $get_number ?></td>
+                                <td><?php echo $kisaan['village'] ?></td>
+                                <td>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="addNewNumber(<?php echo $kisaan['id']; ?>);">Add</button>
+                                </td>
+                                <td><button type="button" class="btn btn-dark" data-toggle="modal" data-target="#myView" onclick="view_numbers(<?php echo $kisaan['id']; ?>);">View</button></td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+
 
         </div>
     </section>
@@ -183,10 +192,17 @@ if (isset($_POST['add_number'])) {
             document.getElementById("kisaan_id").value = id;
         }
 
-        function getkisaanByvillage()
-        {
-            a = document.getElementById("village").value;
-            console.log(a);
+        function getkisaanByvillage() {
+            village_name = document.getElementById("village").value;
+
+            $.ajax({
+                url: "get_kisaan_village.php?village=" + village_name,
+                type: "GET",
+                success: function(response) {
+                    console.log(response);
+                    document.getElementById("main_kisaan_list").innerHTML = response;
+                }
+            });
         }
 
         function view_numbers(id) {
