@@ -19,8 +19,9 @@ class Controller
         $kisaan_name = stripcslashes($_POST['kisaan_name']);
         $kisaan_number = stripcslashes($_POST['kisaan_number']);
         $kisaan_vill = stripcslashes($_POST['kisaan_vill']);
+        $price = stripcslashes($_POST['price']);
 
-        $save_details_query = "INSERT INTO `kisaan`(`name`, `village`, `created_at`) VALUES ('$kisaan_name','$kisaan_vill', now())";
+        $save_details_query = "INSERT INTO `kisaan`(`name`, `village`, `price`,`created_at`) VALUES ('$kisaan_name','$kisaan_vill','$price', now())";
         $save_details = $this->con->query($save_details_query);
         $inserted_id = $this->con->insert_id;
 
