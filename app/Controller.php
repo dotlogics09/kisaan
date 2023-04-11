@@ -30,11 +30,20 @@ class Controller
             $save_number = $this->con->query($save_number_query);
 
             if ($save_number) {
-                return TRUE;
+                $status = TRUE;
+                $message = "Record saved Successfully!";
             }
         } else {
-            return FALSE;
+            $status = FALSE;
+            $message = "Something went wrong. Please try again later!";
         }
+
+        $response = [
+            'status' => $status,
+            'message' => $message,
+        ];
+
+        return json_encode($response);
     }
 
     public function getAllKisaan($type)
@@ -78,10 +87,19 @@ class Controller
         $saveNumber = $this->con->query($saveNumber_query);
 
         if ($saveNumber) {
-            return TRUE;
+            $status = TRUE;
+            $message = "Record saved Successfully!";
         } else {
-            return FALSE;
+            $status = FALSE;
+            $message = "Something went wrong. Please try again later!";
         }
+
+        $response = [
+            'status' => $status,
+            'message' => $message,
+        ];
+
+        return json_encode($response);
     }
 
     public function getNumberDetails($kisaan_id)
@@ -107,13 +125,13 @@ class Controller
     public function getkisaanByvillage($village)
     {
         $table = '';
-        if($village == 'all'){
+        if ($village == 'all') {
             $condition = '';
         } else {
             $condition = ' WHERE `village` = "' . $village . '"';
         }
         $village = "'"  . $village . "'";
-        
+
         $getkisaanByvillage_query = "SELECT * FROM `kisaan`" . $condition;
         $getkisaanByvillage = $this->con->query($getkisaanByvillage_query);
 
